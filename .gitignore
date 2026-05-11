@@ -1,0 +1,8 @@
+venv/
+.env
+asr_data_indic/
+__pycache__/
+*.pt
+*.safetensors
+gemm4-asr-E4B-V1/
+*.wav

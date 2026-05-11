@@ -4,7 +4,7 @@ import wandb
 import jiwer
 import soundfile as sf
 from transformers import TrainerCallback
-from gemma_tamil_asr_finetuning.config import TARGET_SR
+from gemma_tamil_asr_finetuning.config import TARGET_SR,INSTRUCTION
 
 
 class PrintLossCallback(TrainerCallback):
@@ -44,7 +44,7 @@ class WandbMetricsCallback(TrainerCallback):
                     "role": "user",
                     "content": [
                         {"type": "audio", "audio": (audio_array, TARGET_SR)},
-                        {"type": "text",  "text": f"Language: {entry['lang']}\nTranscribe accurately."}
+                        {"type": "text",  "text": INSTRUCTION}
                     ]
                 }]
                 prompt = self.processor.apply_chat_template(conversation, add_generation_prompt=True)

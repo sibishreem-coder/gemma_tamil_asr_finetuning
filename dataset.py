@@ -5,7 +5,7 @@ import torch
 from datasets import load_dataset, Audio
 from torch.utils.data import Dataset
 from tqdm.auto import tqdm
-from gemma_tamil_asr_finetuning.config import TARGET_SR, TRAIN_AUDIO_DIR, EVAL_AUDIO_DIR, INSTRUCTION
+from gemma_tamil_asr_finetuning.config import TARGET_SR, TRAIN_AUDIO_DIR, EVAL_AUDIO_DIR, INSTRUCTION,SVARAH_CONFIGS, TRAIN_SAMPLES
 import os
 
 os.makedirs(TRAIN_AUDIO_DIR, exist_ok=True)
@@ -38,7 +38,7 @@ def process_stream_to_disk(dataset, lang, n_samples, audio_dir, tag, prefix):
             continue
 
         duration = len(array) / TARGET_SR
-        if duration > 30.0 or duration < 2.0:
+        if duration > 30.0 or duration < 1.0:
             skipped += 1
             pbar.set_postfix(saved=len(entries), skipped=skipped)
             continue
@@ -67,6 +67,17 @@ def load_all_entries(indic_configs, train_samples, eval_samples):
             eval_ds, lang_name, eval_samples[lang_name], EVAL_AUDIO_DIR, "eval", prefix
         ))
         gc.collect(); torch.cuda.empty_cache()
+    for lang_name, config_code, prefix in SVARAH_CONFIGS:
+        try:            
+            ds_stream = load_dataset("ai4bharat/Svarah", split="test", streaming=True)
+
+            train_data = process_stream_to_disk(
+                ds_stream, lang_name, TRAIN_SAMPLES.get(lang_name, 6656), 
+                TRAIN_AUDIO_DIR, "train", prefix
+            )
+            train_entries.extend(train_data)
+        except Exception as e:
+            print(f"❌ Error loading Svarah: {e}") 
 
     random.shuffle(train_entries)
     print(f"Train: {len(train_entries)}, Eval: {len(eval_entries)}")

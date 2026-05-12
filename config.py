@@ -15,6 +15,7 @@ TARGET_SR     = 16000
 TRAIN_SAMPLES = {"tamil": 423000}
 EVAL_SAMPLES  = {"tamil": 4426}
 indic_CONFIGS = [("tamil", "tamil", "ta")]
+SVARAH_CONFIGS = [("English", "default", "svarah_en")]
 
 DISK_ROOT       = "./asr_data_indic"
 TRAIN_AUDIO_DIR = os.path.join(DISK_ROOT, "train_wavs")
